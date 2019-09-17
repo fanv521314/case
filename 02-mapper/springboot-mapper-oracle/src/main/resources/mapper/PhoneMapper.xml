@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace : 使当前XML文件与java mapper接口关联起来-->
+<mapper namespace="panfeng.mapper.PhoneMapper">
+
+    <insert id="insert_phone" parameterType="Phone">
+        INSERT INTO TPF_PHONE VALUES (SEQ_TPF_PHONE.NEXTVAL,#{p_phone},#{p_code})
+    </insert>
+
+</mapper>

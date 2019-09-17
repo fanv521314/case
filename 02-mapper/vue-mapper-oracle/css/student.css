@@ -1,0 +1,47 @@
+/*添加学生按钮*/
+#div_data table caption input
+{
+    float: right;
+}
+
+/*表格样式开始*/
+#div_data table
+{
+    border-collapse: collapse;
+    margin: 0 auto;
+    text-align: center;
+    width: 90%;
+}
+
+#div_data table td, table th
+{
+    border: 1px solid #cad9ea;
+    color: #666;
+    height: 30px;
+}
+
+#div_data table th
+{
+    background-color: #CCE8EB;
+    width: 100px;
+}
+
+/*奇数*/
+#div_data table tr:nth-child(odd)
+{
+    background: #fff;
+}
+
+/*偶数*/
+#div_data table tr:nth-child(even)
+{
+    background: #F5FAFA;
+}
+
+/*鼠标悬停*/
+#div_data table tr:hover
+{
+    background: #cad9ea;
+}
+
+/*表格样式结束*/

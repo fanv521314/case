@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace : 使当前XML文件与java mapper接口关联起来-->
+<mapper namespace="panfeng.mapper.GradeMapper" >
+
+    <resultMap id="select_all" type="Grade">
+        <id property="g_id" column="g_id"/>
+        <result property="g_name" column="g_name"/>
+        <collection property="student_list" resultMap="student_list"/>
+    </resultMap>
+
+    <resultMap id="student_list" type="Student">
+        <id property="s_id" column="s_id"/>
+        <result property="s_name" column="s_name"/>
+    </resultMap>
+
+    <select id="select_all" resultMap="select_all">
+select g.*,s.s_id,s.s_name from grade g ,student s where g.g_id=s.s_g_id
+    </select>
+
+</mapper>

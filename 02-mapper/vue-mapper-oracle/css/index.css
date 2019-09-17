@@ -1,0 +1,51 @@
+/*回到顶部*/
+#div_top span
+{
+    position: fixed; /*固定在左上角*/
+    opacity: 0.2; /*透明度*/
+    background: aqua; /*背景颜色*/
+    writing-mode: vertical-rl; /*文字竖着,靠左边lr,靠右边rl*/
+    cursor: pointer; /*鼠标指针,小手*/
+}
+
+/*表格样式开始*/
+#div_data table
+{
+    border-collapse: collapse;
+    margin: 0 auto;
+    text-align: center;
+    width: 90%;
+}
+
+#div_data table td, table th
+{
+    border: 1px solid #cad9ea;
+    color: #666;
+    height: 30px;
+}
+
+#div_data table th
+{
+    background-color: #CCE8EB;
+    width: 100px;
+}
+
+/*奇数*/
+#div_data table tr:nth-child(odd)
+{
+    background: #fff;
+}
+
+/*偶数*/
+#div_data table tr:nth-child(even)
+{
+    background: #F5FAFA;
+}
+
+/*鼠标悬停*/
+#div_data table tr:hover
+{
+    background: #cad9ea;
+}
+
+/*表格样式结束*/

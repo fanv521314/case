@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <link rel="stylesheet" type="text/css" href="./css/register.css"/>
+</head>
+<body>
+<div id="div_register" @keyup.enter="register">
+    <p>
+        <span>账号:</span>
+        <input type="text" placeholder="请输入账号" v-model="username">
+        <span class="info" v-text="username_info"></span>
+    </p>
+    <p>
+        <span>密码:</span>
+        <input type="password" placeholder="请输入密码" v-model="password">
+        <span class="info" v-text="password_info"></span>
+    </p>
+    <p>
+        <span>手机:</span>
+        <input type="text" placeholder="请输入手机" v-model="phone">
+        <span class="info" v-text="phone_info"></span>
+    </p>
+
+    <p>
+        <input type="text" placeholder="请输入验证码" v-model="code">
+        <input type="button" value="发送验证码" @click="post_sms">
+        <span class="info" v-text="code_info"></span>
+    </p>
+    <p>回车进行提交</p>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: "#div_register",
+        data: {
+            username: "",
+            password: "",
+            phone: "",
+            code: "",
+            username_info: "",
+            password_info: "",
+            phone_info: "",
+            code_info: "",
+            time_number: 60,//倒计时
+            setInterval_id: null,//定时器
+        },
+        methods: {
+            register()
+            {
+                if (this.username_info === "" && this.password_info === "" && this.phone_info === "")
+                {
+                    if (this.code === localStorage.getItem(this.phone))
+                    {
+                        axios.post("http://localhost:1801/user/register",
+                            "username=" + this.username +
+                            "&password=" + this.password +
+                            "&phone=" + this.phone).then(() =>
+                        {
+                            if (confirm("注册成功是否现在登录"))
+                            {
+                                axios.post("http://localhost:1801/user/login", "username=" + this.username + "&password=" + this.password).then((res) =>
+                                {
+                                    alert("登录成功");
+                                    window.location.href = "student.html";
+                                });
+                            }
+                        }).catch(() =>
+                        {
+                            alert("注册失败")
+                        });
+
+                    } else
+                    {
+                        this.code_info = "验证码错误...";
+                    }
+
+                }
+            },
+            post_sms()
+            {
+
+                if (this.phone_info === "" && /^1[35678]\d{9}$/.test(this.phone))
+                {
+                    this.code_info = "60";
+                    axios.post("http://localhost:1801/sms/send", "phone=" + this.phone).then((res) =>
+                    {
+                        console.log("验证码: " + res.data);
+                        localStorage.setItem(this.phone, res.data);
+                        this.setInterval_id = setInterval(() =>
+                        {
+                            this.time_number = this.time_number - 1;
+                            this.code_info = this.time_number + "";
+                        }, 1000)
+                    }).catch(() =>
+                    {
+                        this.code_info = "发送失败,请重新发送";
+                    });
+                } else
+                {
+                    this.code_info = "请输入正确的手机号码...";
+                }
+            }
+        },
+        watch: {
+            //账号
+            username(u)
+            {
+                if (u.length < 1 || u.length > 12)
+                {
+                    this.username_info = "账号大小[1,12]...";
+
+                } else
+                {
+                    axios.get("http://localhost:1801/user/query?username=" + u).then(() =>
+                    {
+                        this.username_info = "此账号已存在...";
+                    }).catch(() =>
+                    {
+                        this.username_info = "";
+                    });
+                }
+            },
+            //密码
+            password(p)
+            {
+                if (p.length < 6 || p.length > 16)
+                {
+                    this.password_info = "密码大小[6,16]...";
+                } else
+                {
+                    this.password_info = "";
+                }
+            },
+            //手机
+            phone(p)
+            {
+                if (!/^1[35678]\d{9}$/.test(p))
+                {
+                    this.phone_info = "手机号格式不正确...";
+                } else
+                {
+
+                    axios.get("http://localhost:1801/user/query?phone=" + p).then(() =>
+                    {
+                        this.phone_info = "此号码已注册...";
+                    }).catch(() =>
+                    {
+                        this.phone_info = "";
+                    });
+                }
+            },
+            //验证码的倒计时
+            time_number(t)
+            {
+                if (t == 0)
+                {
+                    clearInterval(this.setInterval_id);
+                    this.setInterval_id = null;
+                    this.code_info = "验证码已失效,请重新发送~!";
+                    this.time_number = 60;
+                }
+            }
+        }
+
+
+    });
+</script>
+</body>
+</html>

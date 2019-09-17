@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link rel="stylesheet" type="text/css" href="./css/login.css"/>
+</head>
+<body>
+<div id="div_login" @keyup.enter="login">
+    <!--&emsp;代表一个汉字 &ensp;代表半个汉字-->
+    <p>
+        <span>账号:</span>
+        <input type="text" placeholder="请输入账号" v-model="username">
+        <span class="info" v-text="username_info"></span>
+    </p>
+    <p>
+        <span>密码:</span>
+        <input type="password" placeholder="请输入密码" v-model="password">
+        <span class="info" v-text="password_info"></span>
+    </p>
+    <p>回车进行登录,没有账号请<a href="register.html"> 点击注册 </a></p>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: "#div_login",
+        data: {
+            username: "",
+            password: "",
+            username_info: "",
+            password_info: ""
+        },
+        methods: {
+            login()
+            {
+                if (this.username_info === "" && this.password_info === "")
+                {
+                    axios.post("http://localhost:1801/user/login", "username=" + this.username + "&password=" + this.password).then((res) =>
+                    {
+                        alert("登录成功");
+                        window.location.href = "student.html";
+                    }).catch(() =>
+                    {
+                        alert("登录失败");
+                    });
+                }
+            }
+        },
+        watch: {
+            //账号
+            username(u)
+            {
+                if (u.length < 1 || u.length > 12)
+                {
+                    this.username_info = "账号大小[1,12]...";
+                } else
+                {
+                    this.username_info = "";
+                }
+            },
+            //密码
+            password(p)
+            {
+                if (p.length < 6 || p.length > 16)
+                {
+                    this.password_info = "密码大小[6,16]...";
+                } else
+                {
+                    this.password_info = "";
+                }
+            }
+        }
+
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生列表</title>
+    <!--引入css-->
+    <link rel="stylesheet" type="text/css" href="./css/student.css"/>
+</head>
+<body>
+<div id="div_student">
+
+    <div id="div_data">
+        <table>
+            <!--标题-->
+            <caption><h2>学生列表</h2></caption>
+            <caption><input type="button" value="添加学生" @click="insert_student"></caption>
+            <!--th-->
+            <tr>
+                <th>编号</th>
+                <th>姓名</th>
+                <th>年级</th>
+                <th>操作</th>
+            </tr>
+            <!--td-->
+            <tr v-for="(student,index) in students" :key="index">
+                <td v-text="student.s_id"></td>
+                <td v-text="student.s_name"></td>
+                <td v-text="student.grade.g_name"></td>
+                <td>
+                    <input type="button" @click="delete_student(index)" value="删除">
+                    <input type="button" @click="update_student(index)" value="编辑">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+<script>
+    new Vue({
+        el: "#div_student",
+        data: {
+            students: [],
+            totalNum: 0,
+            totalPage: 0,
+        },
+        methods: {
+            loadData()
+            {
+                axios.get("http://localhost:1801/student/all").then((res) =>
+                {
+                    if (res.data.itemList.length === 0)
+                    {
+                        alert("暂无数据...")
+                    } else
+                    {
+                        this.students = res.data.itemList;
+                        this.totalNum = res.data.totalNum;
+                        this.totalPage = res.data.totalPage;
+                    }
+                }).catch(() =>
+                {
+                    alert("获取学生信息出错...");
+                });
+            },
+            insert_student()
+            {
+                window.location.href = "insert_student.html"
+            },
+            delete_student(index)
+            {
+
+                axios.delete("http://localhost:1801/student/" + this.students[index].s_id).then(() =>
+                {
+                    //从index坐标开始删除,删除1个
+                    this.students.splice(index, 1);
+                    this.loadData();
+                }).catch(() =>
+                {
+                    alert("删除失败...")
+                });
+            },
+        },
+        created()
+        {
+            this.loadData();
+        },
+    });
+</script>
+</body>
+</html>

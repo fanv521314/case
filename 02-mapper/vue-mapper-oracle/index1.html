@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>标题-index</title>
+    <!--引入css-->
+    <link rel="stylesheet" type="text/css" href="./css/index.css"/>
+</head>
+<body>
+<div id="app">
+    <div id="div_top">
+        <span @click="go_top">回到顶部</span>
+    </div>
+
+    <div id="div_data">
+        <table>
+            <!--标题-->
+            <caption><h2>学生列表</h2></caption>
+            <!--th-->
+            <tr>
+                <th>编号</th>
+                <th>用户名</th>
+                <th>密码</th>
+                <th>年级</th>
+                <th>操作</th>
+            </tr>
+            <!--td-->
+            <tr v-for="(student,index) in students" :key="index">
+                <td>{{student.id}}</td>
+                <td>{{student.username}}</td>
+                <td>{{student.password}}</td>
+                <td>{{student.grade_id}}</td>
+                <td>
+                    <input type="button" @click="delete_student(index)" value="删除学生">
+                    <input type="button" @click="update_student(index)" value="编辑">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--回车触发save方法-->
+    <div id="div_insert" @keyup.enter="insert_student">
+        <input v-model="u" placeholder="请输入用户名">
+        <input v-model="p" placeholder="请输入密码">
+        <select v-model="g">
+            <option v-for="(grade,index) in grades" :key="index" :value="grade.id">{{grade.grade_name}}</option>
+        </select>
+        <!--单击触发save方法-->
+        <input type="button" @click="insert_student" value="添加学生">
+    </div>
+</div>
+
+<script src="./js/vue.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/common.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            pf,
+            students: [],//学生集合
+            grades: [],//年级集合
+            u: "",//输入的账号
+            p: "",//输入的密码
+            g: 1,//选择的年级,默认 一年级
+        },
+        created() {
+            //初始化数据
+            this.loadData();
+        },
+        methods: {
+            loadData() {
+                //查询所有学生
+                pf.http.get("/student/all").then(({data}) => {
+                    this.students = data;
+                });
+                //查询所有年级
+                pf.http.get("/grade/all").then(({data}) => {
+                    this.grades = data;
+                });
+            },
+            delete_student(index) {//这里的方法名不能用delete(关键字)
+                pf.http.delete("/student/" + this.students[index1].id).then(() => {
+                    this.students.splice(index1, 1);
+                });
+            },
+            insert_student() {
+                pf.http.post("/student", {username: this.u, password: this.p, grade_id: this.g}).then(({data}) => {
+                    //添加成功
+                    //alert("添加成功~!");
+                    //向学生集合中添加新增的学生
+                    this.students.push(data);
+                    //清空输入框内容
+                    this.u = "";
+                    this.p = "";
+                }).finally(() => {
+                    //跳转到最后
+                    window.location.href = "#div_insert";
+                });
+            },
+            update_student(index) {
+                //获取要修改的学生
+                const student = this.students[index1];
+                const username = prompt("请输入要修改的用户名:", student.username);
+                const password = prompt("请输入要修改的密  码:", student.password);
+                pf.http.put("/student", {id: student.id, username: username, password: password}).then(() => {
+                    // 请求成功,重新加载一次数据
+                    this.loadData();
+                });
+                //跳转到锚点两种方法
+                //1,会选中
+                //window.location.href="#div_insert";
+                //2,不会选中
+                //document.querySelector("#save_button").scrollIntoView(true);
+            },
+            go_top() {
+                //跳转到顶部
+                window.location.href = "#first_student";
+            },
+        }
+    });
+</script>
+</body>
+</html>

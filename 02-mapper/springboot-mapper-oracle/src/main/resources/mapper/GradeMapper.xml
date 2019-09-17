@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace : 使当前XML文件与java mapper接口关联起来-->
+<mapper namespace="panfeng.mapper.GradeMapper">
+
+    <insert id="insert_grade" parameterType="Grade">
+        INSERT INTO TPF_GRADE VALUES (SEQ_TPF_GRADE.NEXTVAL,#{g_name})
+    </insert>
+
+    <resultMap id="select_all" type="Grade">
+        <id property="g_id" column="G_ID"/>
+        <result property="g_name" column="G_NAME"/>
+        <collection property="student_list" resultMap="student_list"/>
+    </resultMap>
+
+    <resultMap id="student_list" type="Student">
+        <id property="s_id" column="S_ID"/>
+        <result property="s_name" column="S_NAME"/>
+    </resultMap>
+
+    <select id="select_all" resultMap="select_all">
+select G.*,S.S_ID,S.S_NAME from TPF_GRADE G LEFT JOIN TPF_STUDENT S ON G.G_ID=S.S_G_ID
+    </select>
+</mapper>

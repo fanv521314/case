@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加学生</title>
+</head>
+<body>
+<div id="div_insert_student" @keyup.enter="insert_student">
+    <p>
+        <span>姓名:</span>
+        <input type="text" placeholder="请输入姓名" v-model="name">
+        <span class="info" v-text="name_info"></span>
+    </p>
+    <p>
+        <span>年级:</span>
+        <select v-model="choose_g_id">
+            <option v-for="(grade,index) in grades" :key="index" :value="grade.g_id" v-text="grade.g_name"></option>
+        </select>
+    </p>
+
+
+    <p>回车进行提交</p>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: "#div_insert_student",
+        data: {
+            grades: [],
+            name: "",
+            name_info: "",
+            choose_g_id: 1,
+        },
+        methods: {
+            loadData()
+            {
+                axios.get("http://localhost:1801/grade/all").then((res) =>
+                {
+                    this.grades = res.data;
+                }).catch(() =>
+                {
+                    alert("获取年级信息出错...");
+                });
+            },
+            insert_student()
+            {
+                if (this.name_info === "")
+                {
+                    axios.post("http://localhost:1801/student", {
+                        s_name: this.name, grade: {g_id: this.choose_g_id}
+                    }).then(() =>
+                    {
+                        window.location.href="student.html";
+                    }).catch(() =>
+                    {
+                        alert("添加失败...");
+                    });
+                }
+            },
+        },
+        watch:
+            {
+                name(n)
+                {
+                    if (!/^[\u4E00-\u9FA5]{2,4}$/.test(n))
+                    {
+                        this.name_info = "姓名不正确...";
+                    } else
+                    {
+                        this.name_info = "";
+                    }
+                }
+            },
+        created()
+        {
+            this.loadData();
+        },
+    });
+</script>
+</body>
+</html>

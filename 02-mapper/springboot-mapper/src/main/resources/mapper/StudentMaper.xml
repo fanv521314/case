@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="panfeng.mapper.StudentMapper">
+
+    <resultMap id="select_list" type="Student">
+        <id property="s_id" column="s_id"/>
+        <result property="s_name" column="s_name"/>
+        <collection property="grade" resultMap="grade"/>
+    </resultMap>
+    <resultMap id="grade" type="Grade">
+        <id property="g_id" column="g_id"/>
+        <result property="g_name" column="g_name"/>
+    </resultMap>
+
+    <select id="select_list" resultMap="select_list">
+        select * from student s,grade g where s.s_g_id=g.g_id
+        <if test="s_id!=null">
+            and s_id=#{s_id}
+        </if>
+
+        <if test="s_name!=null">
+            and s_name like "%${s_name}%"
+        </if>
+
+        <!-- 这里的test是属性parameterType 直接用g_id会报错,因为Student类中没有g_id的getter方法-->
+        <if test="grade.g_id!=null">
+            <!-- g_id:数据库字段 grade.g_id同if的test一样-->
+            and g_id=#{grade.g_id}
+        </if>
+        order by to_number(s_id) asc
+    </select>
+
+</mapper>
