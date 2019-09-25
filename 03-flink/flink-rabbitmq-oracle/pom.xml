@@ -40,6 +40,13 @@
             <scope>system</scope>
             <systemPath>${basedir}/src/main/resources/lib/ojdbc8-12.2.0.1.0.jar</systemPath>
         </dependency>
+
+        <!--fastjson-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.61</version>
+        </dependency>
     </dependencies>
 
 </project>
